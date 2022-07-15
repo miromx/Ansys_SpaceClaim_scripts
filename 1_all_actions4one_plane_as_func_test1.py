@@ -1,5 +1,4 @@
 # Python Script, API Version = V17
-# Python Script, API Version = V17
 import glob
 import os
 os.chdir(r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4")
@@ -8,24 +7,15 @@ os.chdir(r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4")
 abs_path = r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4"   # путь к папке
 model = "Wing_winglet_big.scdoc"    #модель
 def open_model():
-    """
-   открытие модели
-   """
     importOptions = ImportOptions.Create()    # настройки обязательны (но абстракты)
     # Указать модель
     DocumentOpen.Execute(os.path.join(abs_path, model),  importOptions)
 
 def close_model():
-    """
-  close without save
-  """
     DocumentHelper.CloseDocument()
 
 def sectionZ(planeZ):
     def decorMessage(mess):
-        """
-      украшение строки
-     """
         print('{0} {1} {2}'.format('#' * len(mess), (mess), ('#' * len(mess))))
 
     """
