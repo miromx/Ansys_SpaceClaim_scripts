@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QAction, QApplication, QStyle
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("Вспомогательный помощник GUI")
+        MainWindow.setObjectName("Helper GUI")
         MainWindow.resize(600, 400)
         MainWindow.setMinimumSize(QtCore.QSize(600, 400))
         MainWindow.setMaximumSize(QtCore.QSize(600, 400))
@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
                                       "QPushButton:pressed { background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f7383c, stop: 1 #f4090d) }")
         self.pushButtonWB = QtWidgets.QPushButton(self.tab1)
         self.pushButtonWB.setGeometry(QtCore.QRect(300, 260, 130, 50))
-        self.pushButtonWB.setStatusTip("Запустить Workbench 2019 R2")
+        self.pushButtonWB.setStatusTip("Run Workbench 2019 R2")
 
 
         self.pushButtonWB.setStyleSheet(
@@ -97,7 +97,7 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.pushButton.setFont(font)
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.setStatusTip("Запустить SpaceClaim 2019 R2")
+        self.pushButton.setStatusTip("Run SpaceClaim 2019 R2")
         self.label = QtWidgets.QLabel(self.tab1)
 
         self.label.setGeometry(QtCore.QRect(10, 10, 231, 30))
@@ -195,18 +195,18 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-        bar = self.menubar.addMenu('Меню')
-        about = self.menubar.addMenu('Помощь')
+        bar = self.menubar.addMenu('Menu')
+        about = self.menubar.addMenu('Help')
 
-        exitAction = QAction(icon_stop, 'Выход', self)
+        exitAction = QAction(icon_stop, 'Quit', self)
         exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Выйти из приложения')
+        exitAction.setStatusTip('Exit')
         exitAction.triggered.connect(self.close)
         bar.addAction(exitAction)
 
-        aboutAction = QAction(icon_about, 'О программе', self)
+        aboutAction = QAction(icon_about, 'About', self)
         aboutAction.setShortcut('Ctrl+H')
-        aboutAction.setStatusTip('Посмотреть информацию о программе')
+        aboutAction.setStatusTip('Version info')
         aboutAction.triggered.connect(self.showDialog)
         about.addAction(aboutAction)
 
@@ -223,15 +223,15 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "OptiWidget"))
         # MainWindow.setWindowIcon(QIcon('main.png'))
-        self.pushButton.setText(_translate("MainWindow", "Запуск SCDM"))
-        self.label.setText(_translate("MainWindow", "Запуск ANSYS Workbench"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "Шаг 1"))
-        self.pushButton_2.setText(_translate("MainWindow", "Выбрать файлы"))
-        self.pushButton_3.setText(_translate("MainWindow", "Преобразовать"))
-        self.label_2.setText(_translate("MainWindow", "Переформатирование файлов к нужному порядку"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), _translate("MainWindow", "Шаг 2"))
-        self.pushButton_4.setText(_translate("MainWindow", "Завершить"))
-        self.label_3.setText(_translate("MainWindow", "Формирование точек Чебышева"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), _translate("MainWindow", "Шаг 3"))
-        self.pushButtonWB.setText(_translate("MainWindow", "Запуск WB"))
+        self.pushButton.setText(_translate("MainWindow", "Run SCDM"))
+        self.label.setText(_translate("MainWindow", "Run ANSYS Workbench"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab1), _translate("MainWindow", "Step 1"))
+        self.pushButton_2.setText(_translate("MainWindow", "Choose files"))
+        self.pushButton_3.setText(_translate("MainWindow", "Convert"))
+        self.label_2.setText(_translate("MainWindow", "Reformatting files ..."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), _translate("MainWindow", "Step 2"))
+        self.pushButton_4.setText(_translate("MainWindow", "Complete"))
+        self.label_3.setText(_translate("MainWindow", "Make Chebyshev's points"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), _translate("MainWindow", "Step 3"))
+        self.pushButtonWB.setText(_translate("MainWindow", "Run WB"))
 
