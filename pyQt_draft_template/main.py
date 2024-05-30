@@ -18,7 +18,6 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.pushButtonWB.clicked.connect(self.launch_wb)
         self.pushButton_2.clicked.connect(self.browse)
         self.pushButton_4.clicked.connect(self.graph)
-        # self
 
     def launch_wb(self):
         program = r'C:\Program Files\ANSYS Inc\v194\Framework\bin\Win64\runwb2.exe'
@@ -29,19 +28,19 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         subprocess.Popen(program)
 
     def browse(self):
-        self.listWidget.clear()  # На случай, если в списке уже есть элементы
-        directory = QtWidgets.QFileDialog.getExistingDirectory(self, "Выберите папку")
+        self.listWidget.clear()  
+        directory = QtWidgets.QFileDialog.getExistingDirectory(self, "Choose a folder")
 
-        if directory:  # не продолжать выполнение, если пользователь не выбрал директорию
-            for file_name in os.listdir(directory):  # для каждого файла в директории
+        if directory:  
+            for file_name in os.listdir(directory):  
                 if file_name.endswith(".txt"):
-                    self.listWidget.addItem(file_name)  # добавить файл в listWidget
+                    self.listWidget.addItem(file_name)  
 
     def buttonClicked1(self):
-        self.pushButton.setText('Запущен 1!')
+        self.pushButton.setText('Run 1!')
 
     def buttonClicked2(self):
-        self.pushButtonWB.setText('Запущен 2!')
+        self.pushButtonWB.setText('Run 2!')
 
 
     def graph(self):
@@ -56,8 +55,8 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Information)
         msgBox.setWindowIcon(QIcon('about.png'))
-        msgBox.setText("OptiWidget\nMiro "+"\N{COPYRIGHT SIGN}"+"\n2020")
-        msgBox.setWindowTitle("О программе")
+        msgBox.setText("OptiWidget\n "+"\N{COPYRIGHT SIGN}"+"\n2020")
+        msgBox.setWindowTitle("About")
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
 
