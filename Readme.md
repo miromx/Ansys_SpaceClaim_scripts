@@ -12,9 +12,9 @@ Scripts to slice, format, improve coordinate of wing sections.
 
 ### **TODO**
 
--  <span>&#9744;</span>  requirements
+-  requirements
 
-- <span>&#9744;</span> pictures
+-  pictures
 
 
 ### **Disclaimer**
