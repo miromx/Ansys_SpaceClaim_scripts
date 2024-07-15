@@ -19,13 +19,27 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.browse)
         self.pushButton_4.clicked.connect(self.graph)
 
+    def errorDialog(self):
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Critical)
+        msgBox.setText("Cannot find an installed application...")
+        msgBox.setWindowTitle("Error!")
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec()
+
     def launch_wb(self):
         program = r'C:\Program Files\ANSYS Inc\v194\Framework\bin\Win64\runwb2.exe'
-        subprocess.Popen(program)
+        try:
+            subprocess.Popen(program)
+        except FileNotFoundError:
+            self.errorDialog()
 
     def launch_scdm(self):
         program = r'C:\Program Files\ANSYS Inc\v194\SCDM\SpaceClaim.exe'
-        subprocess.Popen(program)
+        try:
+            subprocess.Popen(program)
+        except FileNotFoundError:
+            self.errorDialog()
 
     def browse(self):
         self.listWidget.clear()  
@@ -59,6 +73,8 @@ class ExampleApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         msgBox.setWindowTitle("About")
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
+
+
 
 
 def main():

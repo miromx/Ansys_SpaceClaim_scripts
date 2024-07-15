@@ -1,6 +1,13 @@
 # Ansys SpaceClaim python scripts
-On introduce some python scripts, that you could use in Ansys SpaceClaim and Ansys Workbench
-Scripts to slice, format, improve coordinate of wing sections.
+This is an unfinished project.
+
+![image info](media/Screenshot.png)
+## 1. pyQt_draft_template
+A boiler plate to test pyQt features. You could set path to Ansys SpaceClaim/Workbench and play them by your own needs.
+
+## 2. scripts
+Some python scripts, that you could use in Ansys SpaceClaim/Workbench
+to slice, format, improve coordinate of wing sections.
 
 ### **Requrements**
 * Python 3.5
