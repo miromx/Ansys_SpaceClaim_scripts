@@ -2,7 +2,7 @@
 Input:
     1_result_z=2.8.txt - from SCDM
 Ouput:
-    2_{}_for_CP_calc.txt - scaled x,y coordinates to x[0...1] to calculate Cheby points
+    2_{}_for_CP_calc.txt - scaled x,y coordinates to x[0...1] to calculate Chebysevs's nodes(points)
     2_to_OptiSLang.txt - output file to OptiSLang
 """
 import numpy as np
@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from collections import deque
 import glob
 import os
-
 
 def sort_sym(a):
     l = list(a)
@@ -27,15 +26,13 @@ def sort_sym(a):
             q.appendleft(l[i])
     return np.array(q)
 
-
-
-path = r'~'  # текущий путь
+path = r'~'  # current path
 
 try:
     os.mkdir(os.path.join(path, 'scdm_txt_sorted'), mode=0o777, dir_fd=None)
     print('ok')
 except FileExistsError:
-    print('уже есть')
+    print('already exists')
 path_target = '~'  # 1
 
 for filename in glob.glob('*.txt'):
@@ -44,6 +41,6 @@ for filename in glob.glob('*.txt'):
     x = f[:, 0]
     y = f[:, 1]
     plt.title(filename)
-    plt.plot(x, y, 'r.-', label='исходный порядок')
+    plt.plot(x, y, 'r.-', label='origin order')
     ff = sort_sym(f)
     np.savetxt(path_target + '{}_for_Chebishev_Points.txt'.format(filename), ff, fmt='%.4f')

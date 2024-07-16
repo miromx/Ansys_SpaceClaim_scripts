@@ -2,13 +2,16 @@
 import glob
 import os
 os.chdir(r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4")
-# Корректно работает, если передняя кромка имеет хотя бы одну точку
-# Не сработает на "чистой" дуге
-abs_path = r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4"   # путь к папке
-model = "Wing_winglet_big.scdoc"    #модель
+#############################################################
+# Works correctly if the leading edge has at least one point
+# Will not work on a “clean” arc
+#############################################################
+abs_path = r"D:\~\geometry_examples_for_fem_cfd\wing-with-winglet-1.snapshot.4"   # path
+model = "Wing_winglet_big.scdoc"    # model
+
 def open_model():
-    importOptions = ImportOptions.Create()    # настройки обязательны (но абстракты)
-    # Указать модель
+    importOptions = ImportOptions.Create()    # settings are required
+    # Choose a model
     DocumentOpen.Execute(os.path.join(abs_path, model),  importOptions)
 
 def close_model():
@@ -19,21 +22,21 @@ def sectionZ(planeZ):
         print('{0} {1} {2}'.format('#' * len(mess), (mess), ('#' * len(mess))))
 
     """
-    1
+    Step 1
     Section by plane
     """
-    datumPlane = DatumPlaneCreator.Create(Point.Create(0, 0, planeZ), Direction.DirZ).CreatedPlanes[0] # создаем плосткость
-    surfSel = Selection.Create(GetRootPart().Bodies[0]) # выбираем целевое тело в дереве
-    datumSel = Selection.Create(datumPlane) # выбираем плоскость, созданную ранее
-    SplitBody.Execute(surfSel, datumSel) # разрезаем
-    for edge in GetRootPart().Bodies[0].Edges: # цикл извлечения кривых сечения 
+    datumPlane = DatumPlaneCreator.Create(Point.Create(0, 0, planeZ), Direction.DirZ).CreatedPlanes[0]  # create a plane
+    surfSel = Selection.Create(GetRootPart().Bodies[0])                                                 # select the target body in the tree
+    datumSel = Selection.Create(datumPlane)                                                             # select the plane created earlier
+    SplitBody.Execute(surfSel, datumSel)                                                                # slicing
+    for edge in GetRootPart().Bodies[0].Edges:                                                          # loop for extracting section curves
         if round(edge.Shape.StartPoint.Z, 2) == planeZ and round(edge.Shape.EndPoint.Z, 2) == planeZ:
             Copy.ToClipboard(Selection.Create(edge))
-            result = Paste.FromClipboard() # кривых в сечении может быть несколько
+            result = Paste.FromClipboard()                                                              # there can be several curves in a section
     decorMessage('1/5-DONE!')
 
     """
-    2
+    Step 2
     extract 3 pairs of points on lead edge and trail edge
     """
     from itertools import chain
@@ -52,15 +55,15 @@ def sectionZ(planeZ):
     x = []  # initial list of coord points x
     y = []  # initial list of coord points y
 
-    for point in GetRootPart().Curves: # извлекаем ВСЕ точки из ВСЕХ кривых сечения
-        x_start = round(point.GetStartPoint().Point.X, 4) # начало
-        y_start = round(point.GetStartPoint().Point.Y, 4) # начало
+    for point in GetRootPart().Curves:                      # extract ALL points from ALL section curves
+        x_start = round(point.GetStartPoint().Point.X, 4)   # begin
+        y_start = round(point.GetStartPoint().Point.Y, 4)   # begin
 
-        x_mid = point.GetMidPoint().Point.X # середина
-        y_mid = point.GetMidPoint().Point.Y # середина
+        x_mid = point.GetMidPoint().Point.X # middle
+        y_mid = point.GetMidPoint().Point.Y # middle
 
-        x_end = round(point.GetEndPoint().Point.X, 4) # конец
-        y_end = round(point.GetEndPoint().Point.Y, 4) # конец
+        x_end = round(point.GetEndPoint().Point.X, 4) # end
+        y_end = round(point.GetEndPoint().Point.Y, 4) # end
 
         x.append(x_start)
         #    x.append(x_mid)
@@ -118,7 +121,7 @@ def sectionZ(planeZ):
     y_points = list(chain.from_iterable(y_points))
     print(x_points, y_points)
 
-    with open('temp_front_end.dat', 'w') as f: # файл для точек носика и хвоста
+    with open('temp_front_end.dat', 'w') as f: # file for head and tail points
         f.write('temp_front_end\n')
         for i, j in zip(x_points, y_points):
             f.write(str(i) + "\t" + str(j) + "\n")
@@ -129,35 +132,35 @@ def sectionZ(planeZ):
     #    print '{0} {1}'.format(x_end,y_end)
 
     """
-    3
+    Step 3
     Define array of vertical lines
     """
     x0 = x_nose
-    yUp = 25 #  в метрах произвольно
-    yDown = -25 # в метрах произвольно
-    b = x_tail - x_nose # длина хорды
-    datumSel = Selection.Create(GetRootPart().DatumPlanes[0]) # выбираем ранее построенную плоскость
-    ViewHelper.SetSketchPlane(datumSel, None) # активируем режим эскиза
+    yUp = 25                #  in meters arbitrary
+    yDown = -25             # in meters arbitrary
+    b = x_tail - x_nose     # chord length
+    datumSel = Selection.Create(GetRootPart().DatumPlanes[0])   # select the previously constructed plane
+    ViewHelper.SetSketchPlane(datumSel, None)                   # activate sketch mode
     for i in range(1, 16):
         param = b / 16
         print(param * i)
-        SketchLine.Create(Point2D.Create(M(x0 + param * i), M(yUp)), Point2D.Create(M(x0 + param * i), M(yDown))) # строим линейный массив отрезков 
+        SketchLine.Create(Point2D.Create(M(x0 + param * i), M(yUp)), Point2D.Create(M(x0 + param * i), M(yDown))) # build a linear array of segments
 
     decorMessage('3/5-DONE!')
 
     """
-    4
+    Step 4
     Extract middle points od airfoil
     """
 
-    all_c = GetRootPart().Curves # все кривые 
-    vertical_lines = all_c[-1:-16:-1]  # вертикальные линиии (их пятнадцать штук) внимание на индекс (16), они последние в списке
-    profil_curves = all_c[-16::-1]  # остальные кривые, они в начале списка
+    all_c = GetRootPart().Curves        # all curves
+    vertical_lines = all_c[-1:-16:-1]   # vertical lines (there are fifteen of them) pay attention to the index (16), they are the last in the list
+    profil_curves = all_c[-16::-1]      # other curves, they are at the beginning of the list
 
-    vertical_linesSel = Selection.Create(vertical_lines) # выбираем вертикальные линии
-    profil_curvesSel = Selection.Create(profil_curves) # выбираем кривые сечения
+    vertical_linesSel = Selection.Create(vertical_lines)    # select vertical lines
+    profil_curvesSel = Selection.Create(profil_curves)      # select section curves
 
-    with open('temp_n_mid_points.dat', 'w') as f: # файл для промежуточных точек
+    with open('temp_n_mid_points.dat', 'w') as f:           # file for intermediate points
         for i in range(len(vertical_lines)):
             for j in range(len(profil_curves)):
                 test = GeometryHelper.CurveCurveIntersect(vertical_lines[i], profil_curves[j])
@@ -165,11 +168,11 @@ def sectionZ(planeZ):
                     DatumPoint.Create(GetRootPart(), "pt_" + str(i) + "_" + str(j), point)
                     coord = point.X, point.Y
                     f.write('{} {}\n'.format(point.X, point.Y))
-                #print(coord) #иногда не срабатывает из-за этого места
+                #print(coord) 
     decorMessage('4/5-DONE!')
 
     """
-    5
+    Step 5
     merge file into one txt file
     """
        
@@ -180,7 +183,7 @@ def sectionZ(planeZ):
             with open(f, "rb") as infile:
                 outfile.write(infile.read())
 
-# закомментировать для проверки компоновки файлов   
+# comment this to check file layout  
     os.remove('temp_front_end.dat')
     os.remove('temp_n_mid_points.dat')
     print("File Removed!")
@@ -189,26 +192,26 @@ def sectionZ(planeZ):
 def sectionY(planeY):
     def decorMessage(mess):
         """
-      украшение строки
+     output decoration
      """
         print('{0} {1} {2}'.format('#' * len(mess), (mess), ('#' * len(mess))))
 
     """
-    1
+    Step 1
     Section by plane
     """
-    datumPlane = DatumPlaneCreator.Create(Point.Create(0, planeY, 0 ), Direction.DirY).CreatedPlanes[0] # создаем плосткость
-    surfSel = Selection.Create(GetRootPart().Bodies[0]) # выбираем целевое тело в дереве
-    datumSel = Selection.Create(datumPlane) # выбираем плоскость, созданную ранее
-    SplitBody.Execute(surfSel, datumSel) # разрезаем
-    for edge in GetRootPart().Bodies[0].Edges: # цикл извлечения кривых сечения 
+    datumPlane = DatumPlaneCreator.Create(Point.Create(0, planeY, 0 ), Direction.DirY).CreatedPlanes[0] # create a plane
+    surfSel = Selection.Create(GetRootPart().Bodies[0])                                                 # select the target body in the tree
+    datumSel = Selection.Create(datumPlane)                                                             # select the plane created earlier
+    SplitBody.Execute(surfSel, datumSel)                                                                # splitting
+    for edge in GetRootPart().Bodies[0].Edges:                                                          # loop for extracting section curves
         if round(edge.Shape.StartPoint.Y, 2) == planeY and round(edge.Shape.EndPoint.Y, 2) == planeY:
             Copy.ToClipboard(Selection.Create(edge))
-            result = Paste.FromClipboard() # кривых в сечении может быть несколько
+            result = Paste.FromClipboard()                                                              # there may be several curves in the section
     decorMessage('1/5-DONE!')
 
     """
-    2
+    Step 2
     extract 3 pairs of points on lead edge and trail edge
     """
     from itertools import chain
@@ -293,7 +296,7 @@ def sectionY(planeY):
     z_points = list(chain.from_iterable(z_points))
     print(x_points, z_points)
 
-    with open('temp_front_end.dat', 'w') as f: # файл для точек носика и хвоста
+    with open('temp_front_end.dat', 'w') as f: # file for head and tail points
         f.write('temp_front_end\n')
         for i, j in zip(x_points, z_points):
             f.write(str(i) + "\t" + str(j) + "\n")
@@ -304,35 +307,35 @@ def sectionY(planeY):
     #    print '{0} {1}'.format(x_end,y_end)
 
     """
-    3
+    Step 3
     Define array of vertical lines
     """
     x0 = x_nose
-    yUp = 50 #  в метрах произвольно
-    yDown = -50 # в метрах произвольно
-    b = x_tail - x_nose # длина хорды
-    datumSel = Selection.Create(GetRootPart().DatumPlanes[0]) # выбираем ранее построенную плоскость
-    ViewHelper.SetSketchPlane(datumSel, None) # активируем режим эскиза
+    yUp = 50        # in meters arbitrary
+    yDown = -50     # in meters arbitrary
+    b = x_tail - x_nose # chord length
+    datumSel = Selection.Create(GetRootPart().DatumPlanes[0])   # select the previously constructed plane
+    ViewHelper.SetSketchPlane(datumSel, None)                   # activate sketch mode
     for i in range(1, 16):
         param = b / 16
         print(param * i)
-    #    SketchLine.Create(Point2D.Create(M(x0 ), M(yUp)), Point2D.Create(M(x0), M(yDown))) # строим линейный массив отрезков 
+    #    SketchLine.Create(Point2D.Create(M(x0 ), M(yUp)), Point2D.Create(M(x0), M(yDown))) #  a linear array of segments 
         SketchLine.Create(Point2D.Create(M(-x0-param * i ), M(yUp)), Point2D.Create(M(-x0-param * i), M(yDown)))
     decorMessage('3/5-DONE!')
 
     """
-    4
+    Step 4
     Extract middle points od airfoil
     """
 
-    all_c = GetRootPart().Curves # все кривые 
-    vertical_lines = all_c[-1:-16:-1]  # вертикальные линиии (их пятнадцать штук) внимание на индекс (16), они последние в списке
-    profil_curves = all_c[-16::-1]  # остальные кривые, они в начале списка
+    all_c = GetRootPart().Curves        # all curves 
+    vertical_lines = all_c[-1:-16:-1]   # vertical lines (there are fifteen of them) pay attention to the index (16), they are the last in the list
+    profil_curves = all_c[-16::-1]      # other curves, they are at the beginning of the list
 
-    vertical_linesSel = Selection.Create(vertical_lines) # выбираем вертикальные линии
-    profil_curvesSel = Selection.Create(profil_curves) # выбираем кривые сечения
+    vertical_linesSel = Selection.Create(vertical_lines)    # select vertical lines
+    profil_curvesSel = Selection.Create(profil_curves)      # select section curves
 
-    with open('temp_n_mid_points.dat', 'w') as f: # файл для промежуточных точек
+    with open('temp_n_mid_points.dat', 'w') as f: # file for intermediate points
         for i in range(len(vertical_lines)):
             for j in range(len(profil_curves)):
                 test = GeometryHelper.CurveCurveIntersect(vertical_lines[i], profil_curves[j])
@@ -340,11 +343,11 @@ def sectionY(planeY):
                     DatumPoint.Create(GetRootPart(), "pt_" + str(i) + "_" + str(j), point)
                     coord = point.X, point.Z
                     f.write('{} {}\n'.format(point.X, point.Z))
-                #print(coord) #иногда не срабатывает из-за этого места
+                #print(coord) 
     decorMessage('4/5-DONE!')
 
     """
-    5
+    Step 5
     merge file into one txt file
     """
        
@@ -355,21 +358,20 @@ def sectionY(planeY):
             with open(f, "rb") as infile:
                 outfile.write(infile.read())
 
-    # закомментировать для проверки компоновки файлов   
+    # comment out to check file layout  
     os.remove('temp_front_end.dat')
     os.remove('temp_n_mid_points.dat')
     print("File Removed!")
     decorMessage('5/5-DONE!')
 
 """
- вбиваем вручную список команд для выполнения.
- при желании зациклить?
+manually enter a list of commands to execute.
+loop if you want?
 """
 #open_model()
-#section(0) # задаем координату по Z для сечения
+#section(0) # set the Z coordinate for the section
 #sectionZ(31.92)
 sectionY(1.5)
-#close_model() #закомментрировать для тестов
-# результат  должен содержать 33 строчки (30 + 1 + 2), по числу точек по Х
-
+#close_model() #comment out for tests
+# the result should contain 33 lines (30 + 1 + 2), according to the number of points along X
     
